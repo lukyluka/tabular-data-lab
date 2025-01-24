@@ -1,0 +1,118 @@
+1. Static Visualization of Data for the Entire Year
+
+
+
+let temperatures = [4, 5, 8, 12, 16, 20, 24, 23, 19, 14, 8, 5];
+
+function setup() {
+  createCanvas(800, 400);
+  noLoop();
+  textSize(12);
+  textAlign(CENTER);
+}
+
+function draw() {
+  background(255);
+
+  let margin = 50;
+  let graphWidth = width - 2 * margin;
+  let graphHeight = height - 2 * margin;
+
+  text('Mean Temperature Over the Year', width / 2, 30);
+  text('Month', width / 2, height - 20);
+  text('Temperature (°C)', 20, height / 2);
+
+  line(margin, margin, margin, height - margin);
+  line(margin, height - margin, width - margin, height - margin);
+
+  let tempMin = Math.min(...temperatures);
+  let tempMax = Math.max(...temperatures);
+
+  let monthMin = 0;
+  let monthMax = 12;
+
+  stroke(0);
+  noFill();
+  beginShape();
+  for (let i = 0; i < temperatures.length; i++) {
+    let temp = temperatures[i];
+    let month = map(i, monthMin, monthMax, margin, width - margin);
+    let tempY = map(temp, tempMin, tempMax, height - margin, margin);
+
+    vertex(month, tempY);
+  }
+  endShape();
+}
+
+
+
+
+
+2. Interactive Visualization for Changing Subsets of Data
+
+// sketch2.js
+
+let temperatures = [
+  4, 5, 8, 12, 16, 20, 24, 23, 19, 14, 8, 5
+];
+
+let selectedMonth = 0;
+let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function setup() {
+  createCanvas(800, 400);
+  noLoop();
+
+  let monthSelector = createSelect();
+  monthSelector.option('All');
+  for (let i = 0; i < months.length; i++) {
+    monthSelector.option(months[i]);
+  }
+  monthSelector.changed(updateGraph);
+  monthSelector.position(10, height - 30);
+}
+
+function draw() {
+  background(255);
+
+  let margin = 50;
+  let graphWidth = width - 2 * margin;
+  let graphHeight = height - 2 * margin;
+
+  text('Mean Temperature for Selected Month', width / 2, 30);
+  text('Day of the Month', width / 2, height - 20);
+  text('Temperature (°C)', 20, height / 2);
+
+  line(margin, margin, margin, height - margin);
+  line(margin, height - margin, width - margin, height - margin);
+
+  let startRow = 0;
+  let endRow = 31;
+
+  if (selectedMonth !== 0) {
+    startRow = (selectedMonth - 1) * 30;
+    endRow = startRow + 30;
+  }
+
+  stroke(0);
+  noFill();
+  beginShape();
+  for (let i = startRow; i < endRow; i++) {
+    let temp = temperatures[selectedMonth - 1];
+    let day = map(i, startRow, endRow, margin, width - margin);
+    let tempY = map(temp, -10, 30, height - margin, margin);
+
+    vertex(day, tempY);
+  }
+  endShape();
+}
+
+function updateGraph() {
+  let monthIndex = this.selected();
+  if (monthIndex !== 'All') {
+    selectedMonth = months.indexOf(monthIndex) + 1;
+  } else {
+    selectedMonth = 0;
+  }
+  redraw();
+}
